@@ -13,6 +13,17 @@ return new class extends Migration
     {
         Schema::create('sales', function (Blueprint $table) {
             $table->id();
+
+            $table->string('g_number')->nullable()->index();
+            $table->timestamp('date')->nullable();
+
+            $table->string('supplier_article')->nullable();
+            $table->string('tech_size')->nullable();
+            $table->string('barcode')->nullable();
+
+            $table->decimal('total_price', 10, 2)->nullable();
+            $table->integer('discount_percent')->nullable();
+
             $table->timestamps();
         });
     }

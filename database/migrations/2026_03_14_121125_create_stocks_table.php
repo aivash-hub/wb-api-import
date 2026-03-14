@@ -13,6 +13,15 @@ return new class extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
+
+            $table->timestamp('date')->nullable();
+
+            $table->string('supplier_article')->nullable();
+            $table->string('tech_size')->nullable();
+            $table->string('barcode')->nullable()->index();
+
+            $table->integer('quantity')->nullable();
+
             $table->timestamps();
         });
     }
