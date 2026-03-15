@@ -36,7 +36,7 @@ class ImportOrdersService
 
             $rows = [];
 
-            foreach ($orders['data'] ?? [] as $order) {
+            foreach ($orders as $order) {
                 $rows[] = [
                     'g_number' => $order['g_number'] ?? null,
                     'date' => isset($order['date'])
