@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 
 class WbApiService
@@ -15,6 +16,7 @@ class WbApiService
             'page' => $page,
             'limit' => $limit,
             'key' => $this->apiKey,
+            'dateFrom' => '2000-01-01',
         ]);
 
         return $response->json();
