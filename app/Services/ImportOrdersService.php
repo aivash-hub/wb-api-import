@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Order;
 use Carbon\Carbon;
+use App\DTO\OrderDto;
 
 class ImportOrdersService
 {
@@ -37,20 +38,9 @@ class ImportOrdersService
             $rows = [];
 
             foreach ($orders as $order) {
-                $rows[] = [
-                    'g_number' => $order['g_number'] ?? null,
-                    'date' => isset($order['date'])
-                        ? Carbon::parse($order['date'])
-                        : null,
-                    'supplier_article' => $order['supplier_article'] ?? null,
-                    'tech_size' => $order['tech_size'] ?? null,
-                    'barcode' => $order['barcode'] ?? null,
-                    'total_price' => $order['total_price'] ?? null,
-                    'discount_percent' => $order['discount_percent'] ?? null,
-                    'warehouse_name' => $order['warehouse_name'] ?? null,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
+                $dto = OrderDto::fromArray($order);
+
+                $rows[] = $dto->toArray();
             }
 
             Order::upsert(
