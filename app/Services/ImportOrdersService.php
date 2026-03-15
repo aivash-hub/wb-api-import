@@ -23,12 +23,21 @@ class ImportOrdersService
         $dateTo = Carbon::now()->toDateString();
 
         do {
-            $response = $this->wbApiService->getOrders(
-                $dateFrom,
-                $dateTo,
-                $page,
-                $limit
-            );
+            try {
+                $response = $this->wbApiService->getOrders(
+                    $dateFrom,
+                    $dateTo,
+                    $page,
+                    $limit
+                );
+            } catch (\Throwable $e) {
+                logger()->error('WB API import failed', [
+                    'page' => $page,
+                    'error' => $e->getMessage(),
+                ]);
+
+                break;
+            }
 
             $orders = $response['data'] ?? [];
 

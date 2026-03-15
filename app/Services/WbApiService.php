@@ -38,6 +38,18 @@ class WbApiService
                 ['key' => $this->apiKey]
             ));
 
-        return $response->json();
+        if (!$response->successful()) {
+            throw new \RuntimeException(
+                'WB API request failed with status ' . $response->status()
+            );
+        }
+
+        $data = $response->json();
+
+        if (!is_array($data)) {
+            throw new \RuntimeException('WB API returned invalid JSON');
+        }
+
+        return $data;
     }
 }
