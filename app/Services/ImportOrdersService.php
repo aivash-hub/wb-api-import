@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Order;
 use Carbon\Carbon;
 use App\DTO\OrderDto;
+use App\Mappers\OrderMapper;
 
 class ImportOrdersService
 {
@@ -40,7 +41,7 @@ class ImportOrdersService
             foreach ($orders as $order) {
                 $dto = OrderDto::fromArray($order);
 
-                $rows[] = $dto->toArray();
+                $rows[] = OrderMapper::toDatabaseArray($dto);
             }
 
             Order::upsert(
