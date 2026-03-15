@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'wb' => [
+        'api_url' => env('WB_API_URL', 'http://109.73.206.144:6969/api'),
+        'api_key' => env('WB_API_KEY'),
+    ],
 ];

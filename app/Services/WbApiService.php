@@ -7,8 +7,14 @@ use Illuminate\Support\Facades\Http;
 
 class WbApiService
 {
-    private string $baseUrl = 'http://109.73.206.144:6969/api';
-    private string $apiKey = 'E6kUTYrYwZq2tN4QEtyzsbEBk3ie';
+    private string $baseUrl;
+    private string $apiKey;
+
+    public function __construct()
+    {
+        $this->baseUrl = config('services.wb.api_url');
+        $this->apiKey = config('services.wb.api_key');
+    }
 
     public function getOrders(
         string $dateFrom,
