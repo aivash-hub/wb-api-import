@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 
 class WbApiService
@@ -22,15 +21,22 @@ class WbApiService
         int $page = 1,
         int $limit = 500
     ): array {
+        return $this->request('/orders', [
+            'page' => $page,
+            'limit' => $limit,
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
+        ]);
+    }
+
+    private function request(string $endpoint, array $params): array
+    {
         $response = Http::retry(3, 100)
             ->timeout(10)
-            ->get("{$this->baseUrl}/orders", [
-                'page' => $page,
-                'limit' => $limit,
-                'key' => $this->apiKey,
-                'dateFrom' => $dateFrom,
-                'dateTo' => $dateTo,
-            ]);
+            ->get("{$this->baseUrl}{$endpoint}", array_merge(
+                $params,
+                ['key' => $this->apiKey]
+            ));
 
         return $response->json();
     }
