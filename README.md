@@ -1,59 +1,146 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# WB API Import (Laravel)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Тестовое задание: импорт данных из внешнего API Wildberries.
+Источник данных: тестовое API (WB API test service).
 
-## About Laravel
+## Стек
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.1
+- Laravel 8
+- Docker / docker-compose
+- Laravel Octane
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Импортируемые сущности
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Orders (заказы)
+- Sales (продажи)
+- Stocks (остатки)
+- Incomes (доходы)
 
-## Learning Laravel
+## Архитектура
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+Импорт реализован через сервисный слой.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```
+app/
+ ├ Services
+ │   ├ WbApiService
+ │   ├ ImportOrdersService
+ │   ├ ImportSalesService
+ │   ├ ImportStocksService
+ │   └ ImportIncomesService
+ │
+ ├ DTO
+ │   └ OrderDto
+ │
+ ├ Mappers
+ │   └ OrderMapper
+ │
+ └ Console
+     └ Commands
+```
 
-## Laravel Sponsors
+### Основные компоненты
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+**WbApiService**
 
-### Premium Partners
+Отвечает за HTTP-запросы к API.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+**Import*Service**
 
-## Contributing
+Содержит логику:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- пагинации
+- обработки данных
+- сохранения через `upsert`
 
-## Code of Conduct
+**Console Commands**
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Позволяют запускать импорт через CLI.
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Установка
 
-## License
+1. Клонировать репозиторий
+```
+git clone 
+cd wb-api-import
+```
+2. Установить зависимости
+```
+composer install
+```
+3. Создать файл окружения
+```
+cp .env.example .env
+```
+4. Настроить подключение к базе данных в `.env`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5. Выполнить миграции
+```
+php artisan migrate
+```
+
+---
+
+## Запуск импорта
+
+### Orders
+
+```
+php artisan wb:import-orders
+```
+
+### Sales
+
+```
+php artisan wb:import-sales
+```
+
+### Stocks
+
+```
+php artisan wb:import-stocks
+```
+
+### Incomes
+
+```
+php artisan wb:import-incomes
+```
+
+---
+
+## Особенности реализации
+
+- используется пагинация API
+- обработка ошибок HTTP
+- bulk insert через `upsert`
+- базовая архитектурная декомпозиция (Service / DTO / Mapper)
+
+---
+
+## База данных
+
+- Проект использует **MySQL**.
+- Название базы данных: `wb_api_import`.
+- Таблицы создаются через Laravel migrations.
+- Настройки подключения задаются в `.env`:
+```
+DB_CONNECTION=mysql  
+DB_HOST=127.0.0.1  
+DB_PORT=3306  
+DB_DATABASE=wb_api_import
+```
+
+- Для создания таблиц необходимо выполнить миграции:
+```
+php artisan migrate
+```
+
+---
+
+## Автор
+
+Anton Ivashkin
